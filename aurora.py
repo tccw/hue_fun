@@ -9,6 +9,7 @@ from phue import Bridge
 import datetime
 import time
 
+# Visit https://www.meethue.com/api/nupnp to find Hue hub IP address
 b = Bridge('192.168.1.236')
 b.connect()
 
@@ -54,3 +55,5 @@ while (n < nrun):
             b.set_light(lr_lamp, 'xy', [0.3,1.], transitiontime = t/2)
             time.sleep(t/10)
     n+=1
+
+b.set_light(lr_lamp, 'off', True, transitiontime = t)
