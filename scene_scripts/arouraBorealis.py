@@ -9,22 +9,22 @@ from phue import Bridge
 import datetime
 import time
 
-b = Bridge('') # your bridge IP here
+b = Bridge('192.168.1.64') # your bridge IP here
 b.connect()
 
 lr_lamp = [1,4]
 b.set_light(lr_lamp, 'on', True)
-t = 30
 n = 0
-nrun = 20
+nrun = 20   # number of cycles
 
 while (n < nrun):
 
     bri_val_f = np.random.randint(20,180) # Random brightness
    #bri_val_s = np.int(np.random.uniform(0.,1.)*bri_val_f)
-    t = np.random.randint(40,500) # Random transition time
+    t = np.random.randint(15,500) # Random transition time in seconds
+    pchance = np.random.uniform(0,1)
 
-    pchance = np.random.random() # Random number to determine chance of occurance
+    #pchance = np.random.random() # Random number to determine chance of occurance
     tnow = datetime.datetime.now()
 
     if tnow.hour >= 17 or tnow.hour <= 5: # Blue is only seen on the dark side of the earth
@@ -53,4 +53,4 @@ while (n < nrun):
             b.set_light(lr_lamp,'bri',bri_val_f, transitiontime = t)
             b.set_light(lr_lamp, 'xy', [0.3,1.], transitiontime = t/2)
             time.sleep(t/10)
-    n+=1
+    n = n + 1
