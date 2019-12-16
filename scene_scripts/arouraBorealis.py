@@ -17,8 +17,8 @@ b.set_light(lr_lamp, 'on', True)
 n = 0
 nrun = 20   # number of cycles
 
-while (n < nrun):
-
+#while (n < nrun):
+while True:
     bri_val_f = np.random.randint(20,180) # Random brightness
    #bri_val_s = np.int(np.random.uniform(0.,1.)*bri_val_f)
     t = np.random.randint(15,500) # Random transition time in seconds
@@ -53,4 +53,4 @@ while (n < nrun):
             b.set_light(lr_lamp,'bri',bri_val_f, transitiontime = t)
             b.set_light(lr_lamp, 'xy', [0.3,1.], transitiontime = t/2)
             time.sleep(t/10)
-    n = n + 1
+    #n = n + 1
