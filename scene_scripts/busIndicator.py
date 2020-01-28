@@ -1,20 +1,26 @@
-from google.transit import gtfs_realtime_pb2
-from google.protobuf.json_format import MessageToJson
-import json
+import sys
+from math import asin, sin, cos, sqrt, radians
+from time import sleep
+
 import urllib.request
 import urllib.response
-from math import asin, sin, cos, sqrt, radians
+
 from datetime import datetime
+from google.transit import gtfs_realtime_pb2
+from phue import Bridge
+
 
 # Constants
-with open(r"data\my_location.txt") as f:
-    data = f.readlines()
-    data = list(map(lambda s: s.strip(), data))
-lat_me = float(data[0])
-lon_me = float(data[1])
-API_KEY = data[2]
-westbound = 1
-eastbound = 0
+# TODO: fix how this behaves if a file isn't found
+def load_file(path):
+    try:
+        with open(path) as f:
+            d = f.readlines()
+            d = list(map(lambda s: s.strip(), d))
+            return d
+    except IOError:
+        print("Error: file not found. Check that the path is correct and the file exists.")
+        sys.exit()
 
 
 def haversine_dist(lat1, lon1, lat2, lon2):
@@ -38,11 +44,31 @@ def haversine_dist(lat1, lon1, lat2, lon2):
     distance_m = round(distance_km * 1000, 0)
     return distance_m
 
+data = load_file(r"data\my_location.txt")
+lat_me = float(data[0])
+lon_me = float(data[1])
+API_KEY = data[2]
+bridge_ip = data[3]
+westbound = 1
+eastbound = 0
 
+# connect to the bridge
+b = Bridge(bridge_ip)
+b.connect()
+
+# create a light grouping and turn then on
+lr_lamp = [1, 4]
+command = {'on': True, 'bri': 255}
+b.set_light(lr_lamp, command)
+# print(b.get_api())
+
+
+# TODO: create a function to query the API at set intervals
 feed = gtfs_realtime_pb2.FeedMessage()
 response = urllib.request.urlopen('https://gtfs.translink.ca/v2/gtfsposition?apikey=' + API_KEY)
 feed.ParseFromString(response.read())
 
+dist_list = []
 for entity in feed.entity:
     if (entity.HasField('vehicle') and
             (entity.vehicle.trip.route_id == "16718") and
@@ -56,7 +82,16 @@ for entity in feed.entity:
         time_diff = now - bus_checkin_time
         dist_meters = haversine_dist(lat_1, lon_1, lat_me, lon_me)
 
-        print(
-            f'The 14 bus with ID {busID} is {dist_meters} meters away.\n'
-            f'GPS-data received {round(time_diff.total_seconds(), 0)} seconds ago.\n'
-        )
+        if (lon_1 > lon_me) and (dist_meters < 1300) and (dist_meters > 550):
+            dist_list.append(dist_meters)
+            print("A westbound 14 is close! Leave now!")
+
+
+        # TODO: set light color logic using traffic light system
+
+        # print(
+        #     f'The 14 bus with ID {busID} is {dist_meters} meters away.\n'
+        #     f'GPS-data received {round(time_diff.total_seconds(), 0)} seconds ago.\n'
+        # )
+
+print(dist_list)
