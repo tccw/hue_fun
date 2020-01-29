@@ -27,6 +27,8 @@ def load_file(path):
         sys.exit(f"Error: file [{path}] not found. Check that the path is correct and the file exists.")
 
 
+# TODO: check initial Earth radius estimate. Differences are too high between this function and more precise
+#       iterative solutions.
 def haversine_dist(lat1, lon1, lat2, lon2):
     """
     http://www.faqs.org/faqs/geography/infosystems-faq/
@@ -64,12 +66,9 @@ b.connect()
 # create a light grouping and turn then on
 # lr_lamp = [1, 4]
 lr_lamp = [1]
-command = {'on': True, 'bri': 255}
+command = {'on': True, 'bri': 127}
 b.set_light(lr_lamp, command)
 # print(b.get_api())
-
-
-# TODO: create a function to query the API at set intervals
 
 
 for n in range(500):
@@ -84,7 +83,7 @@ for n in range(500):
         if (entity.HasField('vehicle') and
                 (entity.vehicle.trip.route_id == "16718") and
                 (entity.vehicle.trip.direction_id == westbound)):
-            print(entity)
+            # print(entity)
             lat_1 = entity.vehicle.position.latitude
             lon_1 = entity.vehicle.position.longitude
             busID = entity.vehicle.vehicle.id
@@ -93,7 +92,8 @@ for n in range(500):
 
             time_diff = now - bus_checkin_time
             dist_meters = haversine_dist(lat_1, lon_1, lat_me, lon_me)
-            # TODO: set light color logic using traffic light system
+            # TODO: set light color logic using traffic light system.
+            # TODO: incorporate RTTI as GPS data might not be frequent enough to be reliable at this scale of prediction
             if (lon_1 > lon_me) and (dist_meters < 1300) and (dist_meters > 500):
                 green_dist.append(dist_meters)
             # print("A westbound 14 is close! Leave now!")
