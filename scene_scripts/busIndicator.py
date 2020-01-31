@@ -58,20 +58,17 @@ API_KEY = data[2]
 bridge_ip = data[3]
 westbound = 1
 eastbound = 0
-lights_flag = False;
+lights_flag = False
 
-# connect to the bridge
-b = Bridge(bridge_ip)
-b.connect()
-
-# create a light grouping and turn then on
-# lr_lamp = [1, 4]
 if lights_flag:
+    # connect to the bridge
+    b = Bridge(bridge_ip)
+    b.connect()
+    # create a light grouping and turn them on
     lr_lamp = [1]
     command = {'on': True, 'bri': 127}
     b.set_light(lr_lamp, command)
-# print(b.get_api())
-
+    # print(b.get_api())
 
 for n in range(500):
 
