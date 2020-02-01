@@ -15,8 +15,18 @@ TransLink assumes no responsibility for the accuracy or currency of the Data use
 """
 
 
-# Constants
-# TODO: fix how this behaves if a file isn't found
+# Function definitions
+# TODO: store the last two unique GPS points and calculate the speed of the bus to forward prop the position
+#       Use the timestamp field to determine if the GPS point is unique.
+# REQUIRES: a list of valid latitude, longitude, and time tuples. The list should be of length three.
+# EFFECTS: Calculates the naive average speed given the last three unique GPS positions and their times
+def gps_bus_speed(lat_lon_pairs):
+    # data [(lat, lon, datetime), (lat, lon, datetime), (lat, lon, datetime)]
+    # stub
+    return 0.0
+
+
+# EFFECTS: Loads a text file or returns an error if the file cannot be found.
 def load_file(path):
     try:
         with open(path) as f:
@@ -51,6 +61,7 @@ def haversine_dist(lat1, lon1, lat2, lon2):
     return distance_m
 
 
+# Constants
 data = load_file(r"data\my_location.txt")
 lat_me = float(data[0])
 lon_me = float(data[1])
