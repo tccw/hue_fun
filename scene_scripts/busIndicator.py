@@ -15,6 +15,17 @@ TransLink assumes no responsibility for the accuracy or currency of the Data use
 """
 
 
+# Class definition
+class Bus:
+    def __init__(self):
+        self.gps_points = []
+        self.vehicle_id = None
+        self.route_number = None
+        self.dist_from_me = None
+
+    def gps_bus_speed # determine how to fully implement this.
+
+
 # Function definitions
 # TODO: store the last two unique GPS points and calculate the speed of the bus to forward prop the position
 #       Use the timestamp field to determine if the GPS point is unique.
@@ -93,7 +104,7 @@ for n in range(500):
         if (entity.HasField('vehicle') and
                 (entity.vehicle.trip.route_id == "16718") and
                 (entity.vehicle.trip.direction_id == westbound)):
-            # print(entity)
+            print(entity)
             lat_1 = entity.vehicle.position.latitude
             lon_1 = entity.vehicle.position.longitude
             busID = entity.vehicle.vehicle.id
