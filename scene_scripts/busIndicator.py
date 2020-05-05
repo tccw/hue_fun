@@ -4,6 +4,7 @@ from time import sleep
 
 import urllib.request
 import urllib.response
+import osrm
 
 from datetime import datetime, timedelta
 from google.transit import gtfs_realtime_pb2
@@ -14,29 +15,38 @@ Route and arrival data used in this product or service is provided by permission
 TransLink assumes no responsibility for the accuracy or currency of the Data used in this product or service.
 """
 
-
 # Class definition
 class Bus:
-    def __init__(self):
-        self.gps_points = []
-        self.vehicle_id = None
-        self.route_number = None
-        self.dist_from_me = None
+    gps_points = []
 
-    def gps_bus_speed # determine how to fully implement this.
+    def __init__(self, gps_point, vehicle_id, route_id):
+        self.gps_points.append(gps_point)
+        self.vehicle_id = vehicle_id
+        self.route_id = route_id
+        # self.dist_from_me = dist_from_me
+
+    # TODO: store the last two unique GPS points and calculate the speed of the bus to forward prop the position
+    #       Use the timestamp field to determine if the GPS point is unique.
+    # REQUIRES: a list of valid latitude, longitude, and time tuples. The list should be of length three.
+    # EFFECTS: Calculates the naive average speed given the last three unique GPS positions and their times
+    def gps_bus_speed(self):
+        # data [(lat, lon, datetime), (lat, lon, datetime), (lat, lon, gps_time, seconds since last check-in)]
+        dist_list = []
+        time = []
+        for g in self.gps_points:
+            dist_list.append(haversine_dist(g[0], g[1], lat_me, lon_me))
+            time.append(g[2])
+
+        # TODO: Test this nonsense. Fix so that only unique GPS points get added. Have sanity checks for speeds
+        dist_diff_list = [dist_list[i + 1] - dist_list[i] for i in range(len(dist_list) - 1)]
+        time_diff_list = [time[i + 1]- time[i] for i in range(len(time) - 1)]
+        time_diff_list = [dt.total_seconds() for dt in time_diff_list]
+
+        # mean speed in m/s
+        return sum(dist_diff_list) / sum(time_diff_list)
 
 
 # Function definitions
-# TODO: store the last two unique GPS points and calculate the speed of the bus to forward prop the position
-#       Use the timestamp field to determine if the GPS point is unique.
-# REQUIRES: a list of valid latitude, longitude, and time tuples. The list should be of length three.
-# EFFECTS: Calculates the naive average speed given the last three unique GPS positions and their times
-def gps_bus_speed(lat_lon_pairs):
-    # data [(lat, lon, datetime), (lat, lon, datetime), (lat, lon, datetime)]
-    # stub
-    return 0.0
-
-
 # EFFECTS: Loads a text file or returns an error if the file cannot be found.
 def load_file(path):
     try:
@@ -99,19 +109,23 @@ for n in range(500):
     feed.ParseFromString(response.read())
     green_dist = []
     red_dist = []
+    bus_list = []
 
     for entity in feed.entity:
         if (entity.HasField('vehicle') and
                 (entity.vehicle.trip.route_id == "16718") and
                 (entity.vehicle.trip.direction_id == westbound)):
-            print(entity)
+            # print(entity)
+
             lat_1 = entity.vehicle.position.latitude
             lon_1 = entity.vehicle.position.longitude
             busID = entity.vehicle.vehicle.id
             now = datetime.now()
             bus_checkin_time = datetime.fromtimestamp(int(entity.vehicle.timestamp))
-
             time_diff = now - bus_checkin_time
+
+            bus_list.append(Bus((lat_1, lon_1, bus_checkin_time, time_diff), busID, entity.vehicle.trip.route_id))
+
             dist_meters = haversine_dist(lat_1, lon_1, lat_me, lon_me)
             # TODO: set light color logic using traffic light system.
             # TODO: incorporate RTTI as GPS data might not be frequent enough to be reliable at this scale of prediction
@@ -126,6 +140,12 @@ for n in range(500):
                     f'The 14 bus with ID {busID} is {dist_meters} meters away.\n'
                     f'GPS-data received {round(time_diff.total_seconds(), 0)} seconds ago.\n'
                 )
+            for b in bus_list:
+                if len(b.gps_points) >= 3:
+                    print(
+                        f'The average speed of {b.vehicle_id} is {b.gps_bus_speed()} m/s'
+                    )
+
     print(green_dist)
     if lights_flag:
         if not len(green_dist):
@@ -135,6 +155,6 @@ for n in range(500):
             b.set_light(lr_lamp, 'xy', [0.2206, 0.662])
             print('turn green')
 
-    print('------------------------------------------------------------------------')
+            print('------------------------------------------------------------------------')
 
-    sleep(20)
+    sleep(10)
