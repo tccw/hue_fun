@@ -1,3 +1,4 @@
+#!/user/bin/hue-lights python
 import sys
 from math import asin, sin, cos, sqrt, radians
 from time import sleep
