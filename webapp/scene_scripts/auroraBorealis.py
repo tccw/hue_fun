@@ -4,12 +4,29 @@ Created on Sat Apr 28 15:48:29 2018
 
 @author: tccw
 """
+import os
+import sys
 import numpy as np
 from phue import Bridge
 import datetime
 import time
+# Function definitions
+# EFFECTS: Loads a text file or returns an error if the file cannot be found.
+def load_file(path):
+    try:
+        with open(path) as f:
+            d = f.readlines()
+            d = list(map(lambda s: s.strip(), d))
+            return d
+    except IOError:
+        sys.exit(f"Error: file [{path}] not found. Check that the path is correct and the file exists.")
+#constants
+file = "/scene_scripts/data/data.txt"
+path = os.getcwd() + file
+data = load_file(path)
+bridge_ip = data[3]
 
-b = Bridge('192.168.1.64') # your bridge IP here
+b = Bridge(bridge_ip) # your bridge IP here
 b.connect()
 
 lr_lamp = [1,4]
