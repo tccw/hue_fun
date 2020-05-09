@@ -1,11 +1,12 @@
 #!/user/bin/hue-lights python
+import os
 import sys
 from math import asin, sin, cos, sqrt, radians
 from time import sleep
 
 import urllib.request
 import urllib.response
-import osrm
+#import osrm
 
 from datetime import datetime, timedelta
 from google.transit import gtfs_realtime_pb2
@@ -113,7 +114,9 @@ def haversine_dist(lat1, lon1, lat2, lon2):
 
 
 # Constants
-data = load_file(r"data\my_location.txt")
+file = "/scene_scripts/data/my_location.txt"
+path = os.getcwd() + file
+data = load_file(path)
 lat_me = float(data[0])
 lon_me = float(data[1])
 API_KEY = data[2]
