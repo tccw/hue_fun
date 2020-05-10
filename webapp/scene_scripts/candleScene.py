@@ -5,7 +5,7 @@ import os
 import numpy as np
 from phue import Bridge
 from math import ceil
-from ..helpers.helpers import load_file
+from helpers.helpers import load_file
 
 # constants
 file = "/scene_scripts/data/data.txt"

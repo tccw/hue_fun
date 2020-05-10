@@ -10,9 +10,8 @@ import numpy as np
 from phue import Bridge
 import datetime
 import time
-from ..helpers.helpers import load_file
+from helpers.helpers import load_file
 
-print("Running aurora script")
 
 # constants
 file = "/scene_scripts/data/data.txt"

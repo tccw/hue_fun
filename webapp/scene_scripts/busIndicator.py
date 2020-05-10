@@ -11,7 +11,7 @@ import urllib.response
 from datetime import datetime, timedelta
 from google.transit import gtfs_realtime_pb2
 from phue import Bridge
-from ..helpers.helpers import load_file
+from helpers.helpers import load_file
 
 """
 Route and arrival data used in this product or service is provided by permission of TransLink. 
