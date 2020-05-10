@@ -1,8 +1,16 @@
+import os
 import numpy as np
 from phue import Bridge
 from math import floor
+from ..helpers.helpers import load_file
 
-b = Bridge('192.168.1.64')  # your bridge IP here
+# constants
+file = "/scene_scripts/data/data.txt"
+path = os.getcwd() + file
+data = load_file(path)
+bridge_ip = data[3]
+
+b = Bridge(bridge_ip)  # your bridge IP here
 b.connect()
 
 lr_lamp = [1, 4]

@@ -11,6 +11,7 @@ import urllib.response
 from datetime import datetime, timedelta
 from google.transit import gtfs_realtime_pb2
 from phue import Bridge
+from ..helpers.helpers import load_file
 
 """
 Route and arrival data used in this product or service is provided by permission of TransLink. 
@@ -78,17 +79,6 @@ class GpsPoint:
 
 
 # Function definitions
-# EFFECTS: Loads a text file or returns an error if the file cannot be found.
-def load_file(path):
-    try:
-        with open(path) as f:
-            d = f.readlines()
-            d = list(map(lambda s: s.strip(), d))
-            return d
-    except IOError:
-        sys.exit(f"Error: file [{path}] not found. Check that the path is correct and the file exists.")
-
-
 # TODO: check initial Earth radius estimate. Differences are too high between this function and more precise
 #       iterative solutions.
 def haversine_dist(lat1, lon1, lat2, lon2):
