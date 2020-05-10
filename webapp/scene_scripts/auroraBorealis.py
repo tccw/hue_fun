@@ -10,7 +10,9 @@ import numpy as np
 from phue import Bridge
 import datetime
 import time
-# Function definitions
+
+print("Running aurora script")
+ 
 # EFFECTS: Loads a text file or returns an error if the file cannot be found.
 def load_file(path):
     try:
@@ -20,6 +22,7 @@ def load_file(path):
             return d
     except IOError:
         sys.exit(f"Error: file [{path}] not found. Check that the path is correct and the file exists.")
+
 #constants
 file = "/scene_scripts/data/data.txt"
 path = os.getcwd() + file
@@ -37,11 +40,9 @@ nrun = 20   # number of cycles
 #while (n < nrun):
 while True:
     bri_val_f = np.random.randint(20,180) # Random brightness
-   #bri_val_s = np.int(np.random.uniform(0.,1.)*bri_val_f)
     t = np.random.randint(15,500) # Random transition time in seconds
-    pchance = np.random.uniform(0,1)
+    pchance = np.random.uniform(0,1) # Random number to determine the state of the lights
 
-    #pchance = np.random.random() # Random number to determine chance of occurance
     tnow = datetime.datetime.now()
 
     if tnow.hour >= 17 or tnow.hour <= 5: # Blue is only seen on the dark side of the earth
